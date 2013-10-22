@@ -64,8 +64,11 @@ class SpojApi:
         
         pg=get_data("http://www.spoj.pl/status/" + self.user_ + "/all")
         
-        from BeautifulSoup import BeautifulSoup
-        
+        try:
+            from BeautifulSoup import BeautifulSoup
+        except:
+            from bs4 import BeautifulSoup
+            
         row_data = {}
         row_data['id'] = sub_id
         
