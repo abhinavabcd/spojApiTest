@@ -45,7 +45,7 @@ class SpojApi:
     
     
     def submit(self, problem, source, lang):    
-        post = urllib.urlencode({"source": source,
+        post = urllib.urlencode({"file": source,
                                              "lang":lang,
                                              "problemcode":problem
                                              })
