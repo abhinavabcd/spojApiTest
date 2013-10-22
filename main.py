@@ -1,3 +1,4 @@
+import lxml
 import os.path
 import re
 import string
@@ -41,7 +42,9 @@ class spoj_application(tornado.web.Application):
             (r"/html/(.*)", tornado.web.StaticFileHandler,static_path)               
         ]
         tornado.web.Application.__init__(self, handlers, **settings)
-
+        self.spoj = SpojApi()    
+        self.spoj.login( config.userName, config.password)
+        
         # Have one global connection to the blog DB across all handlers
 #         self.db = tornado.database.Connection(
 #             host=options.mysql_host, database=options.mysql_database,
@@ -61,8 +64,7 @@ class viewStatus(tornado.web.RequestHandler):
         self.post()
     def post(self):
         id=self.get_argument("id",None)
-        spoj = SpojApi()    
-        spoj.login( config.userName, config.password)        
+        spoj = self.application.spoj    
         self.finish(spoj.get_sub_results(id))
         
         
@@ -76,15 +78,11 @@ class uploadCode(tornado.web.RequestHandler):
         source=self.get_argument("source",None)
         problem=self.get_argument("problemCode",None)
         lang=self.get_argument("lang",None)
-
- 
         if(not source or not problem or not lang):
             self.finish("Error submit code")
             return
         
-        spoj = SpojApi()    
-        spoj.login( config.userName, config.password)
-        
+        spoj = self.application.spoj    
         id=spoj.submit(problem, source, lang)
         if(id>0):
             self.finish("Code Successfully uploaded with <a href='./viewStatus?id="+str(id)+"'>"+str(id)+"</a>")
